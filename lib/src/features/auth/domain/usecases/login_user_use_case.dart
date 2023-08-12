@@ -24,6 +24,5 @@ class LoginUserParams extends Params {
   LoginUserParams({required this.username, required this.password});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [username, password];
 }

@@ -63,14 +63,20 @@ class MockAuthDatSourceImpl extends MockAuthDataSource {
   @override
   Future<void> login(
       {required Username username, required Password password}) async {
-    return Future.delayed(Duration(milliseconds: 300), () {
-      for (final user in _allUsers) {
-        if (user.username.value == username.value) {
-          _controller.add(AuthStatus.authenticated);
-          return;
+    return Future.delayed(
+      Duration(milliseconds: 300),
+      () {
+        print("entre");
+        for (final user in _allUsers) {
+          if (user.username.value == username.value) {
+            _controller.add(AuthStatus.authenticated);
+            return;
+          }
         }
-      }
-    });
+        print("imprime aca");
+        throw LoginWithUsernameAndPasswordFailureEx('user-not-found');
+      },
+    );
   }
 
   @override
@@ -98,7 +104,7 @@ class MockAuthDatSourceImpl extends MockAuthDataSource {
   List<User> _allUsers = <User>[
     User(
       id: 'user_1',
-      username: Username.dirty("user_1"),
+      username: Username.dirty("hector"),
       imagePath: 'assets/images/image_1.jpg',
     ),
     User(
@@ -125,5 +131,24 @@ class CacheClient {
 
   T? read<T extends Object>({required String key}) {
     return _cache[key] as T?;
+  }
+}
+
+class LoginWithUsernameAndPasswordFailureEx implements Exception {
+  const LoginWithUsernameAndPasswordFailureEx(this.message);
+
+  final String message;
+
+  factory LoginWithUsernameAndPasswordFailureEx.fromCode(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return const LoginWithUsernameAndPasswordFailureEx('user-not-found');
+      case 'wrong-password':
+        return const LoginWithUsernameAndPasswordFailureEx('wrong-password');
+      case 'invalid-username':
+        return const LoginWithUsernameAndPasswordFailureEx('invalid-username');
+      default:
+        return const LoginWithUsernameAndPasswordFailureEx('unknown');
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:clean_arch_bloc/src/features/auth/data/datasources/mock_auth_datasource.dart';
+import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/login_screen.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/signup_screen.dart';
 import 'package:clean_arch_bloc/src/features/feed/presentation/discover_screen.dart';
@@ -8,13 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
-  AppRouter();
+  final AuthBloc authBloc;
 
-  final GoRouter router = GoRouter(
+  AppRouter({required this.authBloc});
+
+  late final GoRouter router = GoRouter(
     routes: <GoRoute>[
       GoRoute(
         name: "feed",
-        path: "/login",
+        path: "/",
         builder: (BuildContext context, GoRouterState state) {
           return const Scaffold(
             body: FeedScreen(title: "Feed"),
@@ -43,7 +47,7 @@ class AppRouter {
         ],
       ),
       GoRoute(
-        path: "/",
+        path: "/login",
         name: "login",
         builder: (BuildContext context, GoRouterState state) {
           return const Scaffold(
@@ -65,9 +69,26 @@ class AppRouter {
         ],
       ),
     ],
+    redirect: (BuildContext context, GoRouterState state) {
+      final loginLocation = state.namedLocation("login");
+      final feedLocation = state.namedLocation("feed");
+      final discoverLocation = state.namedLocation("discover");
+      final signUpLocation = state.namedLocation("signup");
 
-    //redirect user to logo screen if not logged in
-    //authenticated: go to feed screen
+      final bool isLoggedIn = authBloc.state.status == AuthStatus.authenticated;
+
+      if (!isLoggedIn && state.fullPath == signUpLocation) {
+        return signUpLocation;
+      }
+      if (!isLoggedIn && state.fullPath == loginLocation) {
+        return loginLocation;
+      }
+      if (!isLoggedIn) {
+        return loginLocation;
+      }
+      return feedLocation;
+    },
+    refreshListenable: GoRouterRefreshStream(authBloc.stream),
   );
 }
 
