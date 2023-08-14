@@ -18,8 +18,9 @@ class MockChatDataSourceImpl implements MockChatDataSource {
 
     var res = chats.where((chat) => chat['userIds'] == chatId).map((chat) {
       String currentUserId = userId;
+      print("currentUserId $currentUserId");
       String otherUserId =
-          (chat["usersIds"] as List).where((id) => id != currentUserId).first;
+          (chat["userIds"] as List).where((id) => id != currentUserId).first;
       Map<String, dynamic> currentUser =
           users.where((user) => user["id"] == currentUserId).first;
       Map<String, dynamic> otherUser =

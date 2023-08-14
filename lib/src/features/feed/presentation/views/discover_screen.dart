@@ -72,7 +72,6 @@ class _DiscoverUserCard extends StatelessWidget {
           bottom: 10,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-
             children: [
               CircleAvatar(
                 backgroundImage:
