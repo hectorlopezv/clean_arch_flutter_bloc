@@ -4,9 +4,16 @@ import 'package:clean_arch_bloc/src/features/auth/data/datasources/mock_auth_dat
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/login_screen.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/signup_screen.dart';
-import 'package:clean_arch_bloc/src/features/feed/presentation/discover_screen.dart';
-import 'package:clean_arch_bloc/src/features/feed/presentation/feed_screen.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/repository/post_repository_impl.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/repository/user_repository_impl.dart';
+import 'package:clean_arch_bloc/src/features/feed/domain/use_cases/get_posts.dart';
+import 'package:clean_arch_bloc/src/features/feed/domain/use_cases/get_users.dart';
+import 'package:clean_arch_bloc/src/features/feed/presentation/blocs/discover/discover_bloc.dart';
+import 'package:clean_arch_bloc/src/features/feed/presentation/blocs/feed/feed_bloc.dart';
+import 'package:clean_arch_bloc/src/features/feed/presentation/views/discover_screen.dart';
+import 'package:clean_arch_bloc/src/features/feed/presentation/views/feed_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
@@ -20,8 +27,17 @@ class AppRouter {
         name: "feed",
         path: "/",
         builder: (BuildContext context, GoRouterState state) {
-          return const Scaffold(
-            body: FeedScreen(title: "Feed"),
+          return BlocProvider(
+            create: (context) =>
+            FeedBloc(
+              getPosts: GetPosts(
+                context.read<PostRepositoryImpl>(),
+              ),
+            )
+              ..add(
+                FeedGetsPosts(),
+              ),
+            child: const FeedScreen(),
           );
         },
       ),
@@ -29,8 +45,18 @@ class AppRouter {
         name: "discover",
         path: "/discover",
         builder: (BuildContext context, GoRouterState state) {
-          return const Scaffold(
-            body: DiscoverScreen(title: "Discover"),
+          return BlocProvider(
+            create: (context) =>
+            DiscoverBloc(
+              getUsers: GetUsers(
+                context.read<UserRepositoryImpl>(),
+              ),
+
+            )
+              ..add(
+                DiscoverGetUsers(),
+              ),
+            child: const DiscoverScreen(),
           );
         },
         routes: [
@@ -38,11 +64,7 @@ class AppRouter {
               path: ":userId",
               name: "user",
               builder: (BuildContext context, GoRouterState state) {
-                return const Scaffold(
-                  body: Center(
-                    child: Text("User"),
-                  ),
-                );
+                return DiscoverScreen();
               }),
         ],
       ),
@@ -85,6 +107,9 @@ class AppRouter {
       }
       if (!isLoggedIn) {
         return loginLocation;
+      }
+      if (discoverLocation != null && state.fullPath == discoverLocation) {
+        return discoverLocation;
       }
       return feedLocation;
     },

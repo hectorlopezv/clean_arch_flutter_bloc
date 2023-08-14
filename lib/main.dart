@@ -10,10 +10,21 @@ import 'package:clean_arch_bloc/src/features/auth/domain/usecases/signup_user_us
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/login/login_cubit.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/signup/signup_cubit.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/datasources/local_feed_data_source.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/datasources/mock_feed_data_source.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/repository/post_repository_impl.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/repository/user_repository_impl.dart';
+import 'package:clean_arch_bloc/src/shared/data/models/post_model.dart';
+import 'package:clean_arch_bloc/src/shared/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserModelAdapter());
+  Hive.registerAdapter(PostModelAdapter());
   runApp(const MyApp());
 }
 
@@ -29,7 +40,18 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthRepositoryImpl(
             authDataSource: MockAuthDatSourceImpl(),
           ),
-        )
+        ),
+        RepositoryProvider(
+          create: (context) => PostRepositoryImpl(
+            MockFeedDataSourceImpl(),
+            LocalFeedDataSourceImpl(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => UserRepositoryImpl(
+            mockFeedDataSource: MockFeedDataSourceImpl(),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -59,7 +81,7 @@ class MyApp extends StatelessWidget {
                 context.read<AuthRepositoryImpl>(),
               ),
             ),
-          )
+          ),
         ],
         child: Builder(
           builder: (context) {
