@@ -8,6 +8,10 @@ abstract class LocalFeedDataSource {
   Future<void> addPost(Post post);
 
   Future<void> deleteAllPosts();
+
+  Future<List<Post>> getPostsByUser(String userId);
+
+  Future<void> deletePostById(String postId);
 }
 
 class LocalFeedDataSourceImpl implements LocalFeedDataSource {
@@ -31,6 +35,12 @@ class LocalFeedDataSourceImpl implements LocalFeedDataSource {
   }
 
   @override
+  Future<void> deletePostById(String postId) async {
+    Box box = await _openBox();
+    return box.delete(postId);
+  }
+
+  @override
   Future<List<Post>> getPosts() async {
     Box<PostModel> box = await _openBox() as Box<PostModel>;
     return box.values
@@ -38,6 +48,16 @@ class LocalFeedDataSourceImpl implements LocalFeedDataSource {
         .map(
           (post) => post.toEntity(),
         )
+        .toList();
+  }
+
+  @override
+  Future<List<Post>> getPostsByUser(String userId) async {
+    Box<PostModel> box = await _openBox() as Box<PostModel>;
+    return box.values
+        .where((post) => post.userModel.id == userId)
+        .toList()
+        .map((post) => post.toEntity())
         .toList();
   }
 }

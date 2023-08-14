@@ -29,11 +29,25 @@ class PostRepositoryImpl implements PostRepository {
 
   @override
   Future<List<Post>> getPostsByUser(String userId) async {
-    return mockFeedDataSource.getPostsByUserId(userId);
+    List<Post> lposts = await localFeedDataSource.getPostsByUser(userId);
+    if (lposts.isEmpty) {
+      lposts.forEach((post) {
+        localFeedDataSource.addPost(post);
+      });
+      return lposts;
+    } else {
+      return localFeedDataSource.getPostsByUser(userId);
+    }
   }
 
   @override
   Future<void> createPost(Post post) {
     return localFeedDataSource.addPost(post);
+  }
+
+  @override
+  Future<void> deletePostById(String postId) {
+    //delete the post locally or remote data source
+    return localFeedDataSource.deletePostById(postId);
   }
 }

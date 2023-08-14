@@ -6,4 +6,6 @@ abstract class PostRepository {
   Future<List<Post>> getPostsByUser(String userId);
 
   Future<void> createPost(Post post);
+
+  Future<void> deletePostById(String postId);
 }

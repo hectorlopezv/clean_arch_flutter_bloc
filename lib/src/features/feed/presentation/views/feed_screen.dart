@@ -38,6 +38,7 @@ class FeedScreen extends StatelessWidget {
                   print("posts");
                   print(state.posts[index]);
                   return CustomVideoPlayer(
+                    key: UniqueKey(),
                     assetPath: state.posts[index].assetpath,
                     caption: state.posts[index].caption,
                     username: state.posts[index].user.username.value,

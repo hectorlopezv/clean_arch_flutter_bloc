@@ -67,7 +67,9 @@ class AddContentScreen extends StatelessWidget {
             return Stack(
               fit: StackFit.expand,
               children: [
-                CustomVideoPlayer(assetPath: state.video!.path),
+                CustomVideoPlayer(
+                  assetPath: state.video!.path,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -161,6 +163,7 @@ Future<dynamic> _addCaption(BuildContext context) {
                           .read<AddContentCubit>()
                           .send_submit(context.read<AuthBloc>().state.user);
                       Navigator.of(context).pop();
+                      context.read<AddContentCubit>().reset();
                     } catch (e) {
                       print(e);
                     }

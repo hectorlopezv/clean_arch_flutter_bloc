@@ -4,11 +4,14 @@ import 'package:clean_arch_bloc/src/features/auth/data/datasources/mock_auth_dat
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/login_screen.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/signup_screen.dart';
+import 'package:clean_arch_bloc/src/features/content/presentation/blocs/manage_content/manage_content_bloc.dart';
 import 'package:clean_arch_bloc/src/features/content/presentation/views/add_content_screen.dart';
 import 'package:clean_arch_bloc/src/features/content/presentation/views/manage_content_screen.dart';
+import 'package:clean_arch_bloc/src/features/feed/data/repository/delete_post.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/repository/post_repository_impl.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/repository/user_repository_impl.dart';
 import 'package:clean_arch_bloc/src/features/feed/domain/use_cases/get_posts.dart';
+import 'package:clean_arch_bloc/src/features/feed/domain/use_cases/get_posts_by_user.dart';
 import 'package:clean_arch_bloc/src/features/feed/domain/use_cases/get_users.dart';
 import 'package:clean_arch_bloc/src/features/feed/presentation/blocs/discover/discover_bloc.dart';
 import 'package:clean_arch_bloc/src/features/feed/presentation/blocs/feed/feed_bloc.dart';
@@ -52,7 +55,21 @@ class AppRouter {
         name: "manage-content",
         path: "/manage-content",
         builder: (BuildContext context, GoRouterState state) {
-          return ManageContentScreen();
+          return BlocProvider(
+            create: (context) => ManageContentBloc(
+              getPostsByUser: GetPostsByUser(
+                context.read<PostRepositoryImpl>(),
+              ),
+              deletePostById: DeletePostById(
+                context.read<PostRepositoryImpl>(),
+              ),
+            )..add(
+                ManageContentGetPostsByUser(
+                  userId: context.read<AuthBloc>().state.user.id,
+                ),
+              ),
+            child: ManageContentScreen(),
+          );
         },
       ),
       GoRoute(
