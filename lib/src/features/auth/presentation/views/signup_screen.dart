@@ -169,7 +169,7 @@ class _Email extends StatelessWidget {
               ? "Invalid email"
               : null,
           hintText: "Enter your email",
-          obscureText: true,
+          obscureText: false,
           onChanged: (email) {
             context.read<SignUpCubit>().emailChanged(email);
           },

@@ -5,7 +5,7 @@ import 'package:clean_arch_bloc/src/shared/domain/entities/user/user_entity.dart
 abstract class AuthRepository {
   Stream<AuthStatus> get authStatus;
 
-  Future<LoggedInUser> get loggedInUser;
+  Future<LoggedInUser> loggedInUser(String username);
 
   Future<void> signup({required LoggedInUser loggedInUser});
 

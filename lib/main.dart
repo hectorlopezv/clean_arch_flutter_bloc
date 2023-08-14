@@ -10,6 +10,11 @@ import 'package:clean_arch_bloc/src/features/auth/domain/usecases/signup_user_us
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/login/login_cubit.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/signup/signup_cubit.dart';
+import 'package:clean_arch_bloc/src/features/chat/data/datasources/local_chat_data_source.dart';
+import 'package:clean_arch_bloc/src/features/chat/data/datasources/mock_chat_data_source.dart';
+import 'package:clean_arch_bloc/src/features/chat/data/models/chat_model.dart';
+import 'package:clean_arch_bloc/src/features/chat/data/models/message_model.dart';
+import 'package:clean_arch_bloc/src/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:clean_arch_bloc/src/features/content/domain/usecases/create_post.dart';
 import 'package:clean_arch_bloc/src/features/content/presentation/blocs/add_content/add_content_bloc.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/datasources/local_feed_data_source.dart';
@@ -27,6 +32,8 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(PostModelAdapter());
+  Hive.registerAdapter(MessageModelAdapter());
+  Hive.registerAdapter(ChatModelAdapter());
   runApp(const MyApp());
 }
 
@@ -54,11 +61,25 @@ class MyApp extends StatelessWidget {
             mockFeedDataSource: MockFeedDataSourceImpl(),
           ),
         ),
+        RepositoryProvider(
+          create: (context) => ChatRepositoryImpl(
+            MockChatDataSourceImpl(),
+            LocalChatDataSourceImpl(),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
+            create: (context) => LoginCubit(
+              loginUser: LoginUser(
+                context.read<AuthRepositoryImpl>(),
+              ),
+            ),
+          ),
+          BlocProvider(
             create: (context) => AuthBloc(
+              loginCubit: context.read<LoginCubit>(),
               getAuthStatus: GetStatusUser(
                 context.read<AuthRepositoryImpl>(),
               ),
@@ -74,13 +95,6 @@ class MyApp extends StatelessWidget {
             create: (context) => AddContentCubit(
               createPost: CreatePost(
                 postRepository: context.read<PostRepositoryImpl>(),
-              ),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => LoginCubit(
-              loginUser: LoginUser(
-                context.read<AuthRepositoryImpl>(),
               ),
             ),
           ),

@@ -11,9 +11,11 @@ part 'login_state.dart';
 class LoginCubit extends Cubit<LoginState> {
   final LoginUser _loginUser;
 
+
   LoginCubit({
     required LoginUser loginUser,
-  })  : _loginUser = loginUser,
+  })
+      : _loginUser = loginUser,
         super(LoginState.initial());
 
   void usernameChanged(String value) {
@@ -54,8 +56,13 @@ class LoginCubit extends Cubit<LoginState> {
             password: state.password,
           ),
         );
-        emit(state.copyWith(
-            status: LoginWithUsernameAndPasswordFailure.success));
+        emit(
+          state.copyWith(
+            status: LoginWithUsernameAndPasswordFailure.success,
+            username: state.username,
+            password: state.password,
+          ),
+        );
       } on LoginWithUsernameAndPasswordFailureEx catch (e) {
         print("aca1");
         print(e);

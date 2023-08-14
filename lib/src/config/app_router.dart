@@ -4,6 +4,10 @@ import 'package:clean_arch_bloc/src/features/auth/data/datasources/mock_auth_dat
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/login_screen.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/signup_screen.dart';
+import 'package:clean_arch_bloc/src/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:clean_arch_bloc/src/features/chat/domain/usecases/get_chats_by_user.dart';
+import 'package:clean_arch_bloc/src/features/chat/presentation/blocs/chat_list/chat_list_bloc.dart';
+import 'package:clean_arch_bloc/src/features/chat/presentation/views/chat_list_screen.dart';
 import 'package:clean_arch_bloc/src/features/content/presentation/blocs/manage_content/manage_content_bloc.dart';
 import 'package:clean_arch_bloc/src/features/content/presentation/views/add_content_screen.dart';
 import 'package:clean_arch_bloc/src/features/content/presentation/views/manage_content_screen.dart';
@@ -45,6 +49,24 @@ class AppRouter {
         },
       ),
       GoRoute(
+        name: "chats",
+        path: "/chats",
+        builder: (BuildContext context, GoRouterState state) {
+          return BlocProvider(
+            create: (context) => ChatListBloc(
+              getChatByUser: GetChatByUser(
+                context.read<ChatRepositoryImpl>(),
+              ),
+            )..add(
+                ChatGetChats(
+                  userId: context.read<AuthBloc>().state.user.id,
+                ),
+              ),
+            child: const ChatListScreen(),
+          );
+        },
+      ),
+      GoRoute(
         name: "add-content",
         path: "/add-content",
         builder: (BuildContext context, GoRouterState state) {
@@ -68,7 +90,7 @@ class AppRouter {
                   userId: context.read<AuthBloc>().state.user.id,
                 ),
               ),
-            child: ManageContentScreen(),
+            child: const ManageContentScreen(),
           );
         },
       ),
@@ -126,11 +148,13 @@ class AppRouter {
       final signUpLocation = state.namedLocation("signup");
       final addContent = state.namedLocation("add-content");
       final manageContent = state.namedLocation("manage-content");
+      final chatList = state.namedLocation("chats");
       Map<String, String> routes = {
         discoverLocation: discoverLocation,
         addContent: addContent,
         feedLocation: feedLocation,
         manageContent: manageContent,
+        chatList: chatList
       };
 
       final bool isLoggedIn = authBloc.state.status == AuthStatus.authenticated;

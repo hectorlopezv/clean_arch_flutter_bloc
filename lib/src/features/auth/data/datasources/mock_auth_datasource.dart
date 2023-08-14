@@ -8,7 +8,7 @@ enum AuthStatus { unknown, authenticated, unauthenticated }
 abstract class MockAuthDataSource {
   Stream<AuthStatus> get authStatus;
 
-  Future<LoggedInUser> get loggedInUser;
+  Future<LoggedInUser> loggedInUser(String username);
 
   Future<void> signup({required LoggedInUser loggedInUser});
 
@@ -53,11 +53,17 @@ class MockAuthDatSourceImpl extends MockAuthDataSource {
   }
 
   @override
-  Future<LoggedInUser> get loggedInUser {
-    return Future.delayed(Duration(milliseconds: 300), () {
-      // get data of logged user
-      return _cache.read(key: userCacheKey) ?? LoggedInUser.empty;
-    });
+  Future<LoggedInUser> loggedInUser(String username) async {
+    print("username aqui 2: $username");
+    await Future.delayed(Duration(milliseconds: 300), () {});
+    User user =
+        _allUsers.where((user) => user.username.value == username).first;
+    return _cache.read(key: userCacheKey) ??
+        LoggedInUser.empty.copyWith(
+          username: Username.dirty(username),
+          id: user.id,
+          imagePath: user.imagePath,
+        );
   }
 
   @override
@@ -104,7 +110,7 @@ class MockAuthDatSourceImpl extends MockAuthDataSource {
   List<User> _allUsers = <User>[
     User(
       id: 'user_1',
-      username: Username.dirty("hector"),
+      username: Username.dirty("user_1"),
       imagePath: 'assets/images/image_1.jpg',
     ),
     User(

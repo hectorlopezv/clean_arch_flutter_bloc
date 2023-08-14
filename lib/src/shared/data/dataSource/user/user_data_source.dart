@@ -1,7 +1,7 @@
 List<Map<String, dynamic>> users = [
   {
     'id': 'user_1',
-    'username': 'User #1',
+    'username': 'user_1',
     'imagePath': 'assets/images/image_1.jpg',
     'followers': 100,
     'followings': 100

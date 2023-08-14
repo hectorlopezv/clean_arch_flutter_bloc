@@ -9,16 +9,13 @@ class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl({required this.authDataSource});
 
   @override
-  // TODO: implement authStatus
   Stream<AuthStatus> get authStatus => authDataSource.authStatus;
 
   @override
-  // TODO: implement loggedInUser
-  Future<LoggedInUser> get loggedInUser => authDataSource.loggedInUser;
-
-  @override
-  Future<void> login({required Username username, required Password password}) {
-    return authDataSource.login(username: username, password: password);
+  Future<void> login(
+      {required Username username, required Password password}) async {
+    print("username: $username, password: $password");
+    return await authDataSource.login(username: username, password: password);
   }
 
   @override
@@ -27,7 +24,12 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<void> signup({required LoggedInUser loggedInUser}) {
-    return authDataSource.signup(loggedInUser: loggedInUser);
+  Future<void> signup({required LoggedInUser loggedInUser}) async {
+    return await authDataSource.signup(loggedInUser: loggedInUser);
+  }
+
+  @override
+  Future<LoggedInUser> loggedInUser(String username) {
+    return authDataSource.loggedInUser(username);
   }
 }
