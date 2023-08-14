@@ -10,6 +10,8 @@ import 'package:clean_arch_bloc/src/features/auth/domain/usecases/signup_user_us
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/login/login_cubit.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/signup/signup_cubit.dart';
+import 'package:clean_arch_bloc/src/features/content/domain/usecases/create_post.dart';
+import 'package:clean_arch_bloc/src/features/content/presentation/blocs/add_content/add_content_bloc.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/datasources/local_feed_data_source.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/datasources/mock_feed_data_source.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/repository/post_repository_impl.dart';
@@ -65,6 +67,13 @@ class MyApp extends StatelessWidget {
               ),
               logoutUser: LogoutUser(
                 context.read<AuthRepositoryImpl>(),
+              ),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => AddContentCubit(
+              createPost: CreatePost(
+                postRepository: context.read<PostRepositoryImpl>(),
               ),
             ),
           ),

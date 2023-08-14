@@ -4,6 +4,8 @@ import 'package:clean_arch_bloc/src/features/auth/data/datasources/mock_auth_dat
 import 'package:clean_arch_bloc/src/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/login_screen.dart';
 import 'package:clean_arch_bloc/src/features/auth/presentation/views/signup_screen.dart';
+import 'package:clean_arch_bloc/src/features/content/presentation/views/add_content_screen.dart';
+import 'package:clean_arch_bloc/src/features/content/presentation/views/manage_content_screen.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/repository/post_repository_impl.dart';
 import 'package:clean_arch_bloc/src/features/feed/data/repository/user_repository_impl.dart';
 import 'package:clean_arch_bloc/src/features/feed/domain/use_cases/get_posts.dart';
@@ -28,13 +30,11 @@ class AppRouter {
         path: "/",
         builder: (BuildContext context, GoRouterState state) {
           return BlocProvider(
-            create: (context) =>
-            FeedBloc(
+            create: (context) => FeedBloc(
               getPosts: GetPosts(
                 context.read<PostRepositoryImpl>(),
               ),
-            )
-              ..add(
+            )..add(
                 FeedGetsPosts(),
               ),
             child: const FeedScreen(),
@@ -42,18 +42,29 @@ class AppRouter {
         },
       ),
       GoRoute(
+        name: "add-content",
+        path: "/add-content",
+        builder: (BuildContext context, GoRouterState state) {
+          return AddContentScreen();
+        },
+      ),
+      GoRoute(
+        name: "manage-content",
+        path: "/manage-content",
+        builder: (BuildContext context, GoRouterState state) {
+          return ManageContentScreen();
+        },
+      ),
+      GoRoute(
         name: "discover",
         path: "/discover",
         builder: (BuildContext context, GoRouterState state) {
           return BlocProvider(
-            create: (context) =>
-            DiscoverBloc(
+            create: (context) => DiscoverBloc(
               getUsers: GetUsers(
                 context.read<UserRepositoryImpl>(),
               ),
-
-            )
-              ..add(
+            )..add(
                 DiscoverGetUsers(),
               ),
             child: const DiscoverScreen(),
@@ -96,6 +107,14 @@ class AppRouter {
       final feedLocation = state.namedLocation("feed");
       final discoverLocation = state.namedLocation("discover");
       final signUpLocation = state.namedLocation("signup");
+      final addContent = state.namedLocation("add-content");
+      final manageContent = state.namedLocation("manage-content");
+      Map<String, String> routes = {
+        discoverLocation: discoverLocation,
+        addContent: addContent,
+        feedLocation: feedLocation,
+        manageContent: manageContent,
+      };
 
       final bool isLoggedIn = authBloc.state.status == AuthStatus.authenticated;
 
@@ -108,10 +127,8 @@ class AppRouter {
       if (!isLoggedIn) {
         return loginLocation;
       }
-      if (discoverLocation != null && state.fullPath == discoverLocation) {
-        return discoverLocation;
-      }
-      return feedLocation;
+
+      return routes[state.fullPath];
     },
     refreshListenable: GoRouterRefreshStream(authBloc.stream),
   );

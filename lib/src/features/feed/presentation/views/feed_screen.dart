@@ -26,22 +26,24 @@ class FeedScreen extends StatelessWidget {
           }
           if (state is FeedLoaded) {
             return SingleChildScrollView(
-              physics: new BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.vertical,
                 addAutomaticKeepAlives: true,
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
+                  print("posts");
+                  print(state.posts[index]);
                   return CustomVideoPlayer(
                     assetPath: state.posts[index].assetpath,
                     caption: state.posts[index].caption,
                     username: state.posts[index].user.username.value,
                   );
                 },
-                itemCount: 2,
+                itemCount: state.posts.length,
               ),
             );
           } else {

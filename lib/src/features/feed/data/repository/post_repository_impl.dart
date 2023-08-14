@@ -13,6 +13,8 @@ class PostRepositoryImpl implements PostRepository {
   Future<List<Post>> getPosts() async {
     //if not internet connection get data from hive storage
     var lfPosts = await localFeedDataSource.getPosts();
+    print("lfPosts: $lfPosts");
+    print(lfPosts.length);
 
     if (lfPosts.isEmpty) {
       var posts = await mockFeedDataSource.getPosts();
@@ -28,5 +30,10 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<List<Post>> getPostsByUser(String userId) async {
     return mockFeedDataSource.getPostsByUserId(userId);
+  }
+
+  @override
+  Future<void> createPost(Post post) {
+    return localFeedDataSource.addPost(post);
   }
 }

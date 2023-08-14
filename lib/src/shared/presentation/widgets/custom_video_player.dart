@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clean_arch_bloc/src/shared/presentation/widgets/custom_gradient_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -19,7 +21,11 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   @override
   void initState() {
-    _controller = VideoPlayerController.asset(widget.assetPath);
+    if (widget.assetPath.startsWith("assets")) {
+      _controller = VideoPlayerController.asset(widget.assetPath);
+    } else {
+      _controller = VideoPlayerController.file(File(widget.assetPath));
+    }
     super.initState();
     _controller.initialize().then((_) {
       setState(() {});
